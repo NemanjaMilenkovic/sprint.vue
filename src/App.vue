@@ -12,26 +12,24 @@
     </div>
     <!-- eslint-disable-next-line  -->
     <singlephoto v-if="currentView === 'SINGLE_PHOTO'" :selectedPhoto="selectedPhoto" />
+    <pulseloader :size="'40px'" v-if="!photosLoaded" />
   </div>
 </template>
-
-
 
 <script>
 import Navbar from "./components/Navbar";
 import AllPhotos from "./components/AllPhotos";
 import SinglePhoto from "./components/SinglePhoto";
-import { listObjects, getSingleObject } from "../utils/index";
-import shortid from "shortid";
-
 import store from "./Vuex";
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 
 export default {
   name: "App",
   components: {
     navbar: Navbar,
     allphotos: AllPhotos,
-    singlephoto: SinglePhoto
+    singlephoto: SinglePhoto,
+    pulseloader: PulseLoader
   },
   created: function() {
     store.commit("setAllPhotos");
@@ -48,6 +46,9 @@ export default {
     },
     selectedPhoto() {
       return store.state.selectedPhoto;
+    },
+    photosLoaded() {
+      return store.state.photosLoaded;
     }
   },
   methods: {

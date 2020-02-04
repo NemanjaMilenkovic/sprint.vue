@@ -12,18 +12,21 @@ export default new Vuex.Store({
     title: "Photo Upload App",
     currentView: "ALL_PHOTOS",
     photos: [],
-    selectedPhoto: ""
+    selectedPhoto: "",
+    photosLoaded: false
   },
   mutations: {
     setAllPhotos: state => {
       listObjects().then(data => {
-        Promise.all(data.map(el => getSingleObject(el.Key))).then(
-          data =>
-            (state.photos = data.map(base64 => ({
-              base64,
-              key: shortid.generate()
-            })))
-        );
+        Promise.all(data.map(el => getSingleObject(el.Key)))
+          .then(
+            data =>
+              (state.photos = data.map(base64 => ({
+                base64,
+                key: shortid.generate()
+              })))
+          )
+          .then(() => (state.photosLoaded = true));
       });
     },
     changeCurrentView: state => (state.currentView = "ALL_PHOTOS"),
