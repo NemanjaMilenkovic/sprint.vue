@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <navbar v-on:click="changeCurrentView" />
+    <navbar v-on:click="changeCurrentView()" />
     <div class="imageCell" v-if="currentView === 'ALL_PHOTOS'">
       <!-- eslint-disable-next-line -->
       <allphotos
@@ -15,12 +15,16 @@
   </div>
 </template>
 
+
+
 <script>
 import Navbar from "./components/Navbar";
 import AllPhotos from "./components/AllPhotos";
 import SinglePhoto from "./components/SinglePhoto";
 import { listObjects, getSingleObject } from "../utils/index";
 import shortid from "shortid";
+
+import store from "./Vuex";
 
 export default {
   name: "App",
@@ -29,30 +33,32 @@ export default {
     allphotos: AllPhotos,
     singlephoto: SinglePhoto
   },
-  data: () => ({
-    title: "Photo Upload App",
-    currentView: "ALL_PHOTOS",
-    photos: [],
-    selectedPhoto: ""
-  }),
   created: function() {
-    listObjects().then(data => {
-      Promise.all(data.map(el => getSingleObject(el.Key))).then(
-        data =>
-          (this.photos = data.map(base64 => ({
-            base64,
-            key: shortid.generate()
-          })))
-      );
-    });
+    store.commit("setAllPhotos");
+  },
+  computed: {
+    title() {
+      return store.state.title;
+    },
+    currentView() {
+      return store.state.currentView;
+    },
+    photos() {
+      return store.state.photos;
+    },
+    selectedPhoto() {
+      return store.state.selectedPhoto;
+    }
   },
   methods: {
     changeCurrentView() {
-      this.currentView = "ALL_PHOTOS";
+      store.commit("changeCurrentView");
+      // store.state.currentView = "ALL_PHOTOS";
     },
     selectOnePhoto(photoData) {
-      this.currentView = "SINGLE_PHOTO";
-      this.selectedPhoto = photoData;
+      store.commit("selectOnePhoto", photoData);
+      // store.state.currentView = "SINGLE_PHOTO";
+      // store.state.selectedPhoto = photoData;
     }
   }
 };
